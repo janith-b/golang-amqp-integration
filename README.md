@@ -1,7 +1,7 @@
 # Golang-AMQP Integration
 ## Introduction
 
-A message queue is a system that enables asynchronous communication between services, commonly used in serverless and microservices architectures. It decouples the services allowing them to to scale independently while increasing the reliability of the system. In this project, I developed a simple log parser in Golang to demonstrate the potential of message queuing and event-driven architecture.
+A message broker is a system that enables asynchronous communication between services, commonly used in serverless and microservices architectures. It decouples the services allowing them to to scale independently while increasing the reliability of the system. In this project, I developed a simple log parser in Golang to demonstrate the potential of message queuing and event-driven architecture.
 
 This system consists of three major components:
 - RabbitMQ instance
