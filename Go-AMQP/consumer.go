@@ -54,7 +54,7 @@ func readLogFile(message string) {
 	json.Unmarshal([]byte(message), &msg)
 	f, err := os.Open(msg.FullFilePath)
 	if err != nil {
-		log.Fatal("An ERROR Ocurred : ", err)
+		log.Println(err)
 	}
 	s := bufio.NewScanner(f)
 	s.Split(bufio.ScanLines)

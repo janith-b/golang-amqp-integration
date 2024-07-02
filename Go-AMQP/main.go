@@ -59,7 +59,7 @@ func uploadFileHander(basePath string, ch *amqp091.Channel) func(c *gin.Context)
 		if e2 != nil {
 			log.Println(e2)
 		} else {
-			c.String(201, "File uploaded", f.Filename)
+			c.String(201, "File uploaded successfully")
 			message := Message{
 				FileName:     f.Filename,
 				FullFilePath: basePath + "/" + f.Filename,
