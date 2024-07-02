@@ -10,7 +10,8 @@ import (
 	"github.com/rabbitmq/amqp091-go"
 )
 
-var API_ENDPOINT string = os.Getenv("API_ENDPOINT")
+var API_BIND_IP string = os.Getenv("API_BIND_IP")
+var API_BIND_PORT string = os.Getenv("API_BIND_PORT")
 var BASE_PATH string = os.Getenv("BASE_PATH")
 var AMQP_URL string = os.Getenv("AMQP_URL")
 var AMQP_EXCHANGE_NAME string = os.Getenv("AMQP_EXCHANGE_NAME")
@@ -34,7 +35,7 @@ func main() {
 		router := gin.Default()
 		router.GET("/health", healthHandler())
 		router.POST("/upload", uploadFileHander(BASE_PATH, ch))
-		router.Run(API_ENDPOINT)
+		router.Run(API_BIND_IP + ":" + API_BIND_PORT)
 	} else if os.Args[1] == "consumer" {
 		log.Println("Started consuming messages")
 		rabbitmqProperties.consumeQueue(ch)
