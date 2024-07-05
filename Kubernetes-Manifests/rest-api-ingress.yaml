@@ -1,0 +1,20 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: rest-api-server-ingress
+  namespace: golang-amqp
+  annotations:
+    nginx.org/client-max-body-size: "0m"
+spec:
+  ingressClassName: nginx
+  rules:
+  - host: api.golang-amqp.vbox-local-cluster.com
+    http:
+      paths:
+      - pathType: Prefix
+        path: /
+        backend:
+          service:
+            name: rest-api-server-svc
+            port:
+              number: 8000

@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: consumer
+  namespace: golang-amqp
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: consumer
+    spec:
+      containers:
+      - name: consumer-container
+        image: jvin911/janiths-public-repo:golang-amqp
+        args:
+        - "consumer"
+        envFrom:
+        - configMapRef:
+            name: consumer-env-configmap
+        imagePullPolicy: IfNotPresent
+        volumeMounts:
+        - name: consumer-volume
+          mountPath: /base
+      volumes:
+      - name: consumer-volume
+        persistentVolumeClaim:
+          claimName: golang-amqp-integration-pvc
+  selector:
+    matchLabels:
+      app: consumer

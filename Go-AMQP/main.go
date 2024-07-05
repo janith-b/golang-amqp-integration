@@ -51,18 +51,20 @@ func healthHandler() func(c *gin.Context) {
 func uploadFileHander(basePath string, ch *amqp091.Channel) func(c *gin.Context) {
 	return func(c *gin.Context) {
 
+		prefix := time.Now().Format("2006_01_02_T_15_04_05")
+
 		f, e1 := c.FormFile("file")
 		if e1 != nil {
 			log.Println(e1)
 		}
-		e2 := c.SaveUploadedFile(f, basePath+"/"+f.Filename)
+		e2 := c.SaveUploadedFile(f, basePath+"/"+prefix+f.Filename)
 		if e2 != nil {
 			log.Println(e2)
 		} else {
 			c.String(201, "File uploaded successfully")
 			message := Message{
 				FileName:     f.Filename,
-				FullFilePath: basePath + "/" + f.Filename,
+				FullFilePath: basePath + "/" + prefix + f.Filename,
 				FileSize:     f.Size,
 				Timestamp:    time.Now().Format("2006-01-02T15:04:05"),
 			}

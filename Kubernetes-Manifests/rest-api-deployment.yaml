@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rest-api-server
+  namespace: golang-amqp
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: rest-api-server
+    spec:
+      containers:
+      - name: rest-api-server-container
+        image: jvin911/janiths-public-repo:golang-amqp
+        args:
+        - "server"
+        envFrom:
+        - configMapRef:
+            name: rest-api-server-env-configmap
+        imagePullPolicy: IfNotPresent
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8000
+            httpHeaders:
+          initialDelaySeconds: 10
+          periodSeconds: 30
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 8000
+            httpHeaders:
+          initialDelaySeconds: 10
+          periodSeconds: 30
+        volumeMounts:
+        - name: rest-api-volume
+          mountPath: /base
+      volumes:
+      - name: rest-api-volume
+        persistentVolumeClaim:
+          claimName: golang-amqp-integration-pvc
+  selector:
+    matchLabels:
+      app: rest-api-server

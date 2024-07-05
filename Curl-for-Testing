@@ -1,1 +1,4 @@
 curl -X POST http://localhost:8000/upload -F "file=@./audit-2024-06-28T04-57-43.125.log"  -H "Content-Type: multipart/form-data" -v
+
+
+curl -X POST http://api.golang-amqp.vbox-local-cluster.com/upload -F "file=@./audit-2024-06-28T04-57-43.125.log"  -H "Content-Type: multipart/form-data" -v
