@@ -4,6 +4,9 @@ rabbitMQ:
   image: rabbitmq:3.13-management
   labels:
     app: rabbitmq
+  service:
+    serviceNamePrefix: rabbitmq
+    serverPort: 5672
 
 producer:
   deploymentName: producer-deployment
@@ -15,6 +18,8 @@ producer:
   healthPath: /health
   initialDelaySeconds: 30
   periodSeconds: 10
+  initContainer:
+    image: busybox:stable
   env:
     configMapNamePrefix: producer
     GIN_MODE: release
@@ -26,6 +31,8 @@ producer:
     AMQP_EXCHANGE_KIND: fanout
     AMQP_QUEUE_NAME: queue_upload_success
     AMQP_ROUTING_KEY: upload_success
+  service:
+    serviceNamePrefix: producer
 
 
 consumer:

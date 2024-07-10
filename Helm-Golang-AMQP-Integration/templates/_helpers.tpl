@@ -1,24 +1,32 @@
 {{- define "GolangAMQP.RabbitMQ.podLabels" -}}
-app: {{.Values.rabbitMQ.labels.app}}
-deployment: {{ .Values.rabbitMQ.deploymentName}}
-helmChart: {{ .Chart.Name }}
+app: {{ .Values.rabbitMQ.labels.app }}
+deployment: {{ .Values.rabbitMQ.deploymentName }}
+helmChart: {{ lower .Chart.Name }}
 {{- end -}}
 
 {{- define "GolangAMQP.producer.podLabels" -}}
 app: {{.Values.producer.labels.app}}
 deployment: {{ .Values.producer.deploymentName}}
-helmChart: {{ .Chart.Name }}
+helmChart: {{ lower .Chart.Name }}
 {{- end -}}
 
 {{- define "GolangAMQP.consumer.podLabels" -}}
 app: {{.Values.consumer.labels.app}}
 deployment: {{ .Values.consumer.deploymentName}}
-helmChart: {{ .Chart.Name }}
+helmChart: {{ lower .Chart.Name }}
 {{- end -}}
 
+
+
 {{- define "GolangAMQP.producer.envConfigMapName" -}}
-name: {{.Chart.Name }}-{{ .Values.producer.env.configMapNamePrefix }}-env-config
+name: {{ lower .Chart.Name }}-{{ .Values.producer.env.configMapNamePrefix }}-env-config
 {{- end -}}
+
+{{- define "GolangAMQP.RabbitMQ.serviceName" -}}
+name: {{lower .Chart.Name }}-{{ .Values.rabbitMQ.service.serviceNamePrefix }}-service
+{{- end -}}
+
+
 
 {{- define "GolangAMQP.producer.env" -}}
 envFrom:
