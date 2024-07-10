@@ -1,0 +1,6 @@
+apiVersion: v2
+name: Golang-AMQP
+description: A Helm chart for Golang-AMQP integration deployment
+type: application
+version: 0.0.1
+appVersion: "1.0.0"

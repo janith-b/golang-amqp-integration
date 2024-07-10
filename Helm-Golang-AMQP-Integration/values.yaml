@@ -1,0 +1,35 @@
+rabbitMQ:
+  deploymentName: rabbitmq-deployment
+  replicaCount: 1
+  image: rabbitmq:3.13-management
+  labels:
+    app: rabbitmq
+
+producer:
+  deploymentName: producer-deployment
+  replicaCount: 1
+  image: jvin911/janiths-public-repo:golang-amqp
+  labels:
+    app: producer
+  imagePullPolicy: IfNotPresent
+  healthPath: /health
+  initialDelaySeconds: 30
+  periodSeconds: 10
+  env:
+    configMapNamePrefix: producer
+    GIN_MODE: release
+    API_BIND_IP: 0.0.0.0
+    API_BIND_PORT: 8000
+    BASE_PATH: /base
+    AMQP_URL: amqp://rabbitmq-svc.golang-amqp.svc.cluster.local:5672
+    AMQP_EXCHANGE_NAME: exchange_upload_success
+    AMQP_EXCHANGE_KIND: fanout
+    AMQP_QUEUE_NAME: queue_upload_success
+    AMQP_ROUTING_KEY: upload_success
+
+
+consumer:
+  deploymentName: consumer-deployment
+  replicaCount: 1
+  labels:
+    app: consumer

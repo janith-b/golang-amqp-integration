@@ -14,9 +14,10 @@ spec:
     name: golang-amqp-integration-pvc
     namespace: golang-amqp
   storageClassName: ""
-  hostPath:
-    path: /mnt/kubernetes-pv
-    type: DirectoryOrCreate
+  nfs:
+    server: 192.168.1.171
+    path: /mnt/kubernetes-nfs/golang-amqp-integration
+    readOnly: true
 
 ---
 apiVersion: v1

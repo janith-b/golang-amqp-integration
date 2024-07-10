@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{.Chart.Name }}-{{ .Values.producer.deploymentName }}
+  namespace: {{ .Release.Namespace }}
+spec:
+  replicas: {{ .Values.producer.replicaCount }}
+  template:
+    metadata:
+      labels:
+      {{ include "GolangAMQP.producer.podLabels" . | indent 2}}
+    spec:
+      containers:
+      - name: producer-container
+        image: {{ .Values.producer.image }}
+        args:
+        - "server"
+        {{ include "GolangAMQP.producer.env" . | indent 0}}
+        imagePullPolicy: {{ .Values.producer.imagePullPolicy }}
+        livenessProbe:
+        {{ include "GolangAMQP.producer.healthCheck" . | indent 2}}
+        readinessProbe:
+        {{ include "GolangAMQP.producer.healthCheck" . | indent 2}}
+        volumeMounts:
+        - name: {{ .Chart.Name }}-volume-01
+          mountPath: {{ .Values.producer.env.BASE_PATH }}
+      volumes:
+      - name: {{ .Chart.Name }}-volume-01
+        persistentVolumeClaim:
+          claimName: golang-amqp-integration-pvc
+  selector:
+    matchLabels:
+    {{ include "GolangAMQP.producer.podLabels" . | indent 2 }}
