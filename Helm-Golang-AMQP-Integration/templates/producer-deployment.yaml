@@ -1,10 +1,10 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ lower .Chart.Name }}-{{ .Values.producer.deploymentName }}
+  name: {{ include "GolangAMQP.producer.deploymentName" .}}
   namespace: {{ .Release.Namespace }}
 spec:
-  replicas: {{ .Values.producer.replicaCount }}
+  replicas: {{ .Values.producer.deployment.replicaCount }}
   template:
     metadata:
       labels:
@@ -12,26 +12,26 @@ spec:
     spec:
       initContainers:
       - name: producer-init-container
-        image: 
+        image: {{ .Values.producer.deployment.initContainer.image }}
         command: ['sh', '-c', "until nc -zv {{ include "GolangAMQP.RabbitMQ.serviceName" . }}.{{ .Release.Namespace}}.svc.cluster.local {{ .Values.rabbitMQ.service.serverPort }}; do echo Waiting for RabbitMQ; sleep 2; done"]
       containers:
       - name: producer-container
-        image: {{ .Values.producer.image }}
+        image: {{ .Values.producer.deployment.image }}
         args:
         - "server"
 {{ include "GolangAMQP.producer.env" . | indent 8}}
-        imagePullPolicy: {{ .Values.producer.imagePullPolicy }}
+        imagePullPolicy: {{ .Values.producer.deployment.imagePullPolicy }}
         livenessProbe:
 {{ include "GolangAMQP.producer.healthCheck" . | indent 10}}
         readinessProbe:
 {{ include "GolangAMQP.producer.healthCheck" . | indent 10}}
         volumeMounts:
-        - name: {{ lower .Chart.Name }}-volume-01
-          mountPath: {{ .Values.producer.env.BASE_PATH }}
+        - name: {{ include "GolangAMQP.producer.deploymentName" .}}-volume-01
+          mountPath: {{ .Values.producer.deployment.env.BASE_PATH }}
       volumes:
-      - name: {{ lower .Chart.Name }}-volume-01
+      - name: {{ include "GolangAMQP.producer.deploymentName" .}}-volume-01
         persistentVolumeClaim:
-          claimName: golang-amqp-integration-pvc
+          claimName: {{ include "GolangAMQP.persistentVolumes.pvcName" .}}
   selector:
     matchLabels:
 {{ include "GolangAMQP.producer.podLabels" . | indent 6 }}

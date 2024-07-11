@@ -1,38 +1,56 @@
 rabbitMQ:
-  deploymentName: rabbitmq-deployment
-  replicaCount: 1
-  image: rabbitmq:3.13-management
-  labels:
-    app: rabbitmq
+  deployment: 
+    namePrefix: rabbitmq
+    replicaCount: 1
+    image: rabbitmq:3.13-management
+    labels:
+      app: rabbitmq
   service:
     serviceNamePrefix: rabbitmq
+    type: ClusterIP
     serverPort: 5672
+    httpPort: 15672
+  ingress:
+    namePrefix: rabbitmq
+    ingressClass: nginx
+    host: rabbitmq.golang-amqp.vbox-local-cluster.com
+    pathType: Prefix
+    path: /
+
 
 producer:
-  deploymentName: producer-deployment
-  replicaCount: 1
-  image: jvin911/janiths-public-repo:golang-amqp
-  labels:
-    app: producer
-  imagePullPolicy: IfNotPresent
-  healthPath: /health
-  initialDelaySeconds: 30
-  periodSeconds: 10
-  initContainer:
-    image: busybox:stable
-  env:
-    configMapNamePrefix: producer
-    GIN_MODE: release
-    API_BIND_IP: 0.0.0.0
-    API_BIND_PORT: 8000
-    BASE_PATH: /base
-    AMQP_URL: amqp://rabbitmq-svc.golang-amqp.svc.cluster.local:5672
-    AMQP_EXCHANGE_NAME: exchange_upload_success
-    AMQP_EXCHANGE_KIND: fanout
-    AMQP_QUEUE_NAME: queue_upload_success
-    AMQP_ROUTING_KEY: upload_success
+  deployment:
+    namePrefix: producer
+    replicaCount: 1
+    image: jvin911/janiths-public-repo:golang-amqp
+    labels:
+      app: producer
+    imagePullPolicy: IfNotPresent
+    healthPath: /health
+    initialDelaySeconds: 30
+    periodSeconds: 10
+    initContainer:
+      image: busybox:stable
+    env:
+      configMapNamePrefix: producer
+      GIN_MODE: release
+      API_BIND_IP: 0.0.0.0
+      API_BIND_PORT: 8000
+      BASE_PATH: /base
+      AMQP_URL: amqp://rabbitmq-svc.golang-amqp.svc.cluster.local:5672
+      AMQP_EXCHANGE_NAME: exchange_upload_success
+      AMQP_EXCHANGE_KIND: fanout
+      AMQP_QUEUE_NAME: queue_upload_success
+      AMQP_ROUTING_KEY: upload_success
   service:
     serviceNamePrefix: producer
+    type: ClusterIP
+  ingress:
+    namePrefix: producer
+    ingressClass: nginx
+    host: api.golang-amqp.vbox-local-cluster.com
+    pathType: Prefix
+    path: /
 
 
 consumer:
@@ -40,3 +58,15 @@ consumer:
   replicaCount: 1
   labels:
     app: consumer
+
+persistentVolume:
+  namePrefix: nfs
+  size: 1Gi
+  volumeMode: Filesystem
+  accessModes: 
+  - ReadWriteMany
+  reclaimPolicy: Retain
+  nfsServer: 192.168.1.171
+  nfsPath: /mnt/kubernetes-nfs/golang-amqp-integration
+  nfsReadOnly: false
+  claimNamePrefix: nfs

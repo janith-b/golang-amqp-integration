@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "GolangAMQP.producer.serviceName" .}}
+  namespace: {{ .Release.Namespace }}
+spec:
+  type: {{ .Values.producer.service.type }}
+  selector:
+{{ include "GolangAMQP.producer.podLabels" . | indent 4}}
+  ports:
+  - name: http-server
+    port: {{ .Values.producer.deployment.env.API_BIND_PORT }}
+    targetPort: {{ .Values.producer.deployment.env.API_BIND_PORT }}

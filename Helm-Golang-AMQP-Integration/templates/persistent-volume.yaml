@@ -1,0 +1,38 @@
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: {{ include "GolangAMQP.persistentVolumes.pvName" .}}
+spec:
+  capacity:
+    storage: {{ .Values.persistentVolume.size }}
+  volumeMode: {{ .Values.persistentVolume.volumeMode }}
+  accessModes:
+  {{- range .Values.persistentVolume.accessModes }}
+  - {{ . }}
+  {{- end}}
+  persistentVolumeReclaimPolicy: {{ .Values.persistentVolume.reclaimPolicy }}
+  claimRef:
+    name: {{ include "GolangAMQP.persistentVolumes.pvcName" .}}
+    namespace: {{ .Release.Namespace }}
+  storageClassName: ""
+  nfs:
+    server: {{ .Values.persistentVolume.nfsServer }}
+    path: {{ .Values.persistentVolume.nfsPath }}
+    readOnly: {{ .Values.persistentVolume.nfsReadOnly }}
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ include "GolangAMQP.persistentVolumes.pvcName" .}}
+  namespace: {{ .Release.Namespace }}
+spec:
+  accessModes:
+  {{- range .Values.persistentVolume.accessModes }}
+  - {{ . }}
+  {{- end}}
+  volumeMode: {{ .Values.persistentVolume.volumeMode }}
+  resources:
+    requests:
+      storage: {{ .Values.persistentVolume.size }}

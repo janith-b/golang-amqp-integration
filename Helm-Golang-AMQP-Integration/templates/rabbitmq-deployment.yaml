@@ -1,10 +1,12 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ lower .Chart.Name }}-{{ .Values.rabbitMQ.deploymentName }}
+  name: {{ include "GolangAMQP.RabbitMQ.deploymentName" .}}
   namespace: {{ .Release.Namespace }}
+  labels:
+{{ include "GolangAMQP.RabbitMQ.podLabels" . | indent 4 }}
 spec:
-  replicas: {{ .Values.rabbitMQ.replicaCount }}
+  replicas: {{ .Values.rabbitMQ.deployment.replicaCount }}
   template:
     metadata:
       labels:
@@ -12,7 +14,7 @@ spec:
     spec:
       containers:
       - name: rabbitmq-container
-        image: {{ .Values.rabbitMQ.image }}
+        image: {{ .Values.rabbitMQ.deployment.image }}
   selector:
     matchLabels:
 {{ include "GolangAMQP.RabbitMQ.podLabels" . | indent 6 }}
